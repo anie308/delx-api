@@ -1,0 +1,32 @@
+{
+  "name": "delx-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "jurstadev",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.35.0",
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-messages": "^1.0.1",
+    "express-session": "^1.17.3",
+    "express-validator": "^6.15.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "passport": "^0.6.0",
+    "passport-http": "^0.3.0",
+    "passport-local": "^1.0.0",
+    "sib-api-v3-sdk": "^8.5.0"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22"
+  }
+}
