@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
-app.use(`${apiSeedUrl}/auth`, userRoutes);
+app.use(`${apiSeedUrl}/user`, userRoutes);
 app.use(`${apiSeedUrl}/category`, categoryRoutes);
 
 

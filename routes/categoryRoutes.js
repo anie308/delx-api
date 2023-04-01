@@ -1,4 +1,4 @@
-const { createCategory, getCategories } = require("../controllers/categoryController");
+const { createCategory, getCategories, deleteCategory } = require("../controllers/categoryController");
 const { categoryValidator, validate } = require("../middlewares/validtors");
 const {
   verifyTokenAndAuthorization,
@@ -9,11 +9,14 @@ const router = require("express").Router();
 
 router.post(
   "/create",
-//   verifyTokenAndAuthorization,
+  verifyTokenAndAuthorization,
   categoryValidator,
   validate,
   createCategory 
 );
+
+router.delete('/:catId', verifyTokenAndAuthorization, deleteCategory)
+router.put('/:catId', verifyTokenAndAuthorization, updateCategory)
 
 router.get('/all', getCategories)
 

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const client = SibApiV3Sdk.ApiClient.instance;
+const { isValidObjectId } = require("mongoose");
 
 const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.SIB_KEY;
@@ -10,7 +11,7 @@ apiKey.apiKey = process.env.SIB_KEY;
 const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const createUser = async (req, res) => {
-  const { firstname, lastname, email, password, isAdmin } = req.body;
+  const { firstname, lastname, email, password, role } = req.body;
   const isAlreadyExists = await User.findOne({ email });
 
   if (isAlreadyExists)
@@ -20,7 +21,7 @@ const createUser = async (req, res) => {
     firstname,
     lastname,
     email,
-    isAdmin,
+    role,
     password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
   });
 
@@ -51,33 +52,6 @@ const createUser = async (req, res) => {
     });
 };
 
-const loginAdmin = async (req, res) => {
-  const { username, password } = req.body;
-
-  const isExistingUser = await User.findOne({ username });
-  !isExistingUser && res.status(401).json("Wrong Credentials !");
-  const hashedGuy = cryptoJs.AES.decrypt(
-    isExistingUser.password,
-    process.env.PASS_SEC
-  );
-  const decryptedPassword = hashedGuy.toString(cryptoJs.enc.Utf8);
-
-  if (decryptedPassword !== password) {
-    res.status(401).json("Wrong Credentials!");
-  } else {
-    const accessToken = jwt.sign(
-      {
-        id: isExistingUser._id,
-        isAdmin: isExistingUser.isAdmin,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "2d" }
-    );
-    const { password, ...others } = isExistingUser._doc;
-
-    res.status(200).json({ ...others, accessToken });
-  }
-};
 const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
@@ -95,6 +69,7 @@ const loginUser = async (req, res) => {
     const accessToken = jwt.sign(
       {
         id: isExistingUser._id,
+        role: isExistingUser.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "2d" }
@@ -105,7 +80,72 @@ const loginUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { firstname, lastname, email, password, role } = req.body;
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          firstname,
+          lastname,
+          email,
+          password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
+          role,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+
+const getSingleUser = async (req, res) => {
+  const { id } = req.params;
+  if (!id){
+    return res.status(401).json({ error: "Invalid request" });
+  }const user = await User.findOne({id});
+
+  if (!user) return res.status(404).json({ error: "User not found!" });
+
+  res.status(200).json(user);
+}
+
+const getUsers = async (res) => {
+  User.find({ role: { $ne: "admin" } }, { _id: 0, name: 1, email: 1 })
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Internal server error");
+    });
+};
+
+
+
+
+const deleteUser = async (req, res) => {
+  const { userId } = req.params;
+  if (!isValidObjectId(userId))
+    return res.status(401).json({ error: "Invalid request" });
+
+  const user = await User.findById(userId);
+  if (!user) return res.status(404).json({ error: "User not found!" });
+
+  await User.findByIdAndDelete(userId);
+  res.json({ message: "Course removed successfully !" });
+};
+
 module.exports = {
   createUser,
   loginUser,
+  deleteUser,
+  updateUser,
+  getUsers,
+  getSingleUser
 };
