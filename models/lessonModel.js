@@ -45,6 +45,15 @@ const lessonSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        lession_video:{
+          type: Object,
+          url: {
+            type: URL,
+          },
+          public_id: {
+            type: String,
+          },
+        }
       },
     ],
     category: {

@@ -1,6 +1,7 @@
 const cryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Student = require("../models/studentModel");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const client = SibApiV3Sdk.ApiClient.instance;
 const { isValidObjectId } = require("mongoose");
@@ -25,6 +26,11 @@ const createUser = async (req, res) => {
     password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
   });
 
+  const newStudent = new Student({
+    firstname,
+    lastname,
+    email,
+  })
   const sender = {
     email: process.env.EMAIL,
   };
@@ -35,7 +41,8 @@ const createUser = async (req, res) => {
     },
   ];
 
-  tranEmailApi
+  if(role === "user") {
+    tranEmailApi
     .sendTransacEmail({
       sender,
       to: receiver,
@@ -45,11 +52,17 @@ const createUser = async (req, res) => {
     .then(() => {
       console.log("email sent");
       newAuth.save();
+     if(role === "user") newStudent.save();
       res.status(201).json(newAuth);
     })
     .catch((err) => {
       res.status(500).json(err);
     });
+  } else{
+    newAuth.save();
+    res.status(201).json(newAuth);
+  }
+ 
 };
 
 const loginUser = async (req, res) => {

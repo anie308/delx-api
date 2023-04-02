@@ -1,4 +1,4 @@
-const { createCategory, getCategories, deleteCategory } = require("../controllers/categoryController");
+const { createCategory, getCategories, deleteCategory, updateCategory } = require("../controllers/categoryController");
 const { categoryValidator, validate } = require("../middlewares/validtors");
 const {
   verifyTokenAndAuthorization,
