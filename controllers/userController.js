@@ -30,7 +30,7 @@ const createUser = async (req, res) => {
     firstname,
     lastname,
     email,
-  })
+  });
   const sender = {
     email: process.env.EMAIL,
   };
@@ -41,28 +41,27 @@ const createUser = async (req, res) => {
     },
   ];
 
-  if(role === "user") {
+  if (role === "user") {
     tranEmailApi
-    .sendTransacEmail({
-      sender,
-      to: receiver,
-      subject: "Welcome to Delx",
-      htmlContent: `<div>Hi ${firstname} ${lastname}</div>`,
-    })
-    .then(() => {
-      console.log("email sent");
-      newAuth.save();
-     if(role === "user") newStudent.save();
-      res.status(201).json(newAuth);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
-  } else{
+      .sendTransacEmail({
+        sender,
+        to: receiver,
+        subject: "Welcome to Delx",
+        htmlContent: `<div>Hi ${firstname} ${lastname}</div>`,
+      })
+      .then(() => {
+        console.log("email sent");
+        newAuth.save();
+        if (role === "user") newStudent.save();
+        res.status(201).json(newAuth);
+      })
+      .catch((err) => {
+        res.status(500).json(err);
+      });
+  } else {
     newAuth.save();
     res.status(201).json(newAuth);
   }
- 
 };
 
 const loginUser = async (req, res) => {
@@ -116,38 +115,38 @@ const updateUser = async (req, res) => {
   }
 };
 
-
 const getSingleUser = async (req, res) => {
   const { id } = req.params;
-  if (!id){
+  if (!id) {
     return res.status(401).json({ error: "Invalid request" });
-  }const user = await User.findOne({id});
+  }
+  const user = await User.findOne({ id });
 
   if (!user) return res.status(404).json({ error: "User not found!" });
 
   res.status(200).json(user);
-}
-
-const getUsers = async (res) => {
-  User.find({ role: { $ne: "admin" } }, { _id: 0, name: 1, email: 1 })
-    .then((users) => {
-      res.status(201).json(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Internal server error");
-    });
 };
 
-const searchUser = async (req, res)=> {
-  const {firstname} = req.query;
-  if(!firstname.trim())
-  return res.status(401).json({ error: "Invalid request" });
+const getUsers = async (req, res) => {
+ try{
+  const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 });
+  res.status(200).json(users);
+ }catch(err){
+  res.status(500).json(err)
+ }
 
-  const users = await User.find({firstname: { $regex: firstname, $options: "i" }});
+};
+
+const searchUser = async (req, res) => {
+  const { firstname } = req.query;
+  if (!firstname.trim())
+    return res.status(401).json({ error: "Invalid request" });
+
+  const users = await User.find({
+    firstname: { $regex: firstname, $options: "i" },
+  });
   res.status(201).json(users);
-}
-
+};
 
 const deleteUser = async (req, res) => {
   const { userId } = req.params;
@@ -168,5 +167,5 @@ module.exports = {
   updateUser,
   getUsers,
   getSingleUser,
-  searchUser
+  searchUser,
 };

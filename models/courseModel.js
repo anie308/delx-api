@@ -38,6 +38,11 @@ const courseSchema = new mongoose.Schema(
     price: {
       type: Number,
     },
+    status:{
+      type: String,
+      enum: ["draft", "published"],
+      default: 'draft'
+    },
     lessons: [
       {
         lesson_number: {
@@ -51,15 +56,7 @@ const courseSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        // lesson_video: {
-        //   type: Object,
-        //   url: {
-        //     type: URL,
-        //   },
-        //   public_id: {
-        //     type: String,
-        //   },
-        // },
+
       },
     ],
     category: {

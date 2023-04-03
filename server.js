@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const port = process.env.PORT || 3000;
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const lessonRoutes = require('./routes/courseRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 
 const app = express();
 const apiSeedUrl = '/api/v1';
@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(`${apiSeedUrl}/user`, userRoutes);
 app.use(`${apiSeedUrl}/category`, categoryRoutes);
-app.use(`${apiSeedUrl}/lesson`, lessonRoutes);
+app.use(`${apiSeedUrl}/course`, courseRoutes);
 
 
 app.listen(port, () => {

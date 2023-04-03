@@ -6,7 +6,6 @@ const verifyToken = (req, res, next) => {
       jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) res.status(403).json("Token is not valid");
         req.user = user;
-        console.log(user.role)
         next();
       });
     } else {
