@@ -5,6 +5,7 @@ const {
   updateUser,
   getUsers,
   getSingleUser,
+  searchUser,
 } = require("../controllers/userController");
 const { authValidator, loginValidator } = require("../middlewares/validtors");
 const {
@@ -17,8 +18,9 @@ const router = require("express").Router();
 router.post("/signup", authValidator, createUser);
 router.post("/signin", loginValidator, loginUser);
 router.delete("/:userId", verifyTokenAndAuthorization, deleteUser);
-router.put("/:userId", verifyToken, updateUser);
+router.patch("/:userId", verifyToken, updateUser);
 router.get("/all", verifyTokenAndAuthorization, getUsers);
+router.get('/search', verifyTokenAndAuthorization, searchUser);
 router.get("/userId", verifyTokenAndAuthorization, getSingleUser);
 
 

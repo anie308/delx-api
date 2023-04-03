@@ -139,7 +139,14 @@ const getUsers = async (res) => {
     });
 };
 
+const searchUser = async (req, res)=> {
+  const {firstname} = req.query;
+  if(!firstname.trim())
+  return res.status(401).json({ error: "Invalid request" });
 
+  const users = await User.find({firstname: { $regex: firstname, $options: "i" }});
+  res.status(201).json(users);
+}
 
 
 const deleteUser = async (req, res) => {
@@ -160,5 +167,6 @@ module.exports = {
   deleteUser,
   updateUser,
   getUsers,
-  getSingleUser
+  getSingleUser,
+  searchUser
 };

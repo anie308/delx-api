@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const lessonSchema = new mongoose.Schema(
+const courseSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
-      unique: true,
-    },
+      trim: true,
+        },
     slug: {
       type: String,
       required: true,
@@ -25,12 +25,18 @@ const lessonSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
-      unique: true,
+      trim: true,
     },
     instructor: {
       type: String,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
       required: true,
-      unique: true,
+    },
+    price: {
+      type: Number,
     },
     lessons: [
       {
@@ -45,15 +51,15 @@ const lessonSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        lession_video:{
-          type: Object,
-          url: {
-            type: URL,
-          },
-          public_id: {
-            type: String,
-          },
-        }
+        // lesson_video: {
+        //   type: Object,
+        //   url: {
+        //     type: URL,
+        //   },
+        //   public_id: {
+        //     type: String,
+        //   },
+        // },
       },
     ],
     category: {
@@ -64,4 +70,4 @@ const lessonSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Lesson", lessonSchema);
+module.exports = mongoose.model("Course", courseSchema);

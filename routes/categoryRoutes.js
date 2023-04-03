@@ -16,7 +16,7 @@ router.post(
 );
 
 router.delete('/:catId', verifyTokenAndAuthorization, deleteCategory)
-router.put('/:catId', verifyTokenAndAuthorization, updateCategory)
+router.patch('/:catId', verifyTokenAndAuthorization, updateCategory)
 
 router.get('/all', getCategories)
 
