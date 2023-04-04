@@ -7,13 +7,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const courseRoutes = require('./routes/courseRoutes');
-
+const cors = require('cors');
 const app = express();
 const apiSeedUrl = '/api/v1';
 
 
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cors({ origin: true}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(`${apiSeedUrl}/admin`, adminRoutes);
