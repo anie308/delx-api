@@ -18,7 +18,6 @@ const createCategory = async (req, res) => {
 
     res.status(201).json(newCategory);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Error saving category" });
   }
 };
@@ -53,7 +52,7 @@ const deleteCategory = async (req, res) => {
   res.json({ message: "Category removed successfully !" });
 };
 
-const getCategories = async (res) => {
+const getCategories = async (req,res) => {
   try {
     const categories = await Category.find({}).sort({ createdAt: -1 });
     const categoryCount = await Category.countDocuments();
@@ -67,7 +66,6 @@ const getCategories = async (res) => {
       categoryCount: categoryCount,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };

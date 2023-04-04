@@ -10,6 +10,7 @@
   "author": "jurstadev",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.3.4",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.35.0",
     "crypto-js": "^4.1.1",
@@ -18,6 +19,7 @@
     "express-messages": "^1.0.1",
     "express-session": "^1.17.3",
     "express-validator": "^6.15.0",
+    "got": "^12.6.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
     "multer": "^1.4.5-lts.1",

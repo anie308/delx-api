@@ -22,7 +22,21 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
+    address:[{
+      streetaddress:{ type: String },
+      city:{ type: String },
+      state:{ type: String },
+      zip:{ type: String },
+  }],
+  username: {
+    type: String,
+    unique: true,
+  },
+    lessons: [{
+      courseId: { type: String },
+      title: { type: String },
+  }],
+    role: { type: String,  default: "user" },
   },
   { timestamps: true }
 );

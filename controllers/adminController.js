@@ -1,23 +1,22 @@
 const cryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+const Admin = require("../models/adminModel");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const client = SibApiV3Sdk.ApiClient.instance;
-const { isValidObjectId } = require("mongoose");
 
 const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.SIB_KEY;
 
 const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-const createUser = async (req, res) => {
+const createAdmin = async (req, res) => {
   const { firstname, lastname, email, password, role } = req.body;
-  const isAlreadyExists = await User.findOne({ email });
+  const isAlreadyExists = await Admin.findOne({ email });
 
   if (isAlreadyExists)
-    return res.status(400).json({ error: "User already Exists" });
+    return res.status(400).json({ error: "Admin already Exists" });
 
-  const newUser = new User({
+  const newAuth = new Admin({
     firstname,
     lastname,
     email,
@@ -46,9 +45,9 @@ const createUser = async (req, res) => {
       })
       .then(() => {
         console.log("email sent");
-        newUser.save();
-        if (role === "user") 
-        res.status(201).json(newUser);
+        newAuth.save();
+        if (role === "user") newStudent.save();
+        res.status(201).json(newAuth);
       })
       .catch((err) => {
         res.status(500).json(err);
@@ -57,10 +56,10 @@ const createUser = async (req, res) => {
   
 };
 
-const loginUser = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
-  const isExistingUser = await User.findOne({ email });
+  const isExistingUser = await Admin.findOne({ email });
   !isExistingUser && res.status(401).json("Wrong Credentials !");
   const hashedGuy = cryptoJs.AES.decrypt(
     isExistingUser.password,
@@ -85,11 +84,11 @@ const loginUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const updateAdmin = async (req, res) => {
   const { id } = req.params;
   const { firstname, lastname, email, password, role } = req.body;
   try {
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await Admin.findByIdAndUpdate(
       id,
       {
         $set: {
@@ -108,57 +107,15 @@ const updateUser = async (req, res) => {
   }
 };
 
-const getSingleUser = async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(401).json({ error: "Invalid request" });
-  }
-  const user = await User.findOne({ id });
 
-  if (!user) return res.status(404).json({ error: "User not found!" });
 
-  res.status(200).json(user);
-};
 
-const getUsers = async (req, res) => {
- try{
-  const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 });
-  res.status(200).json(users);
- }catch(err){
-  res.status(500).json(err)
- }
 
-};
 
-const searchUser = async (req, res) => {
-  const { firstname } = req.query;
-  if (!firstname.trim())
-    return res.status(401).json({ error: "Invalid request" });
 
-  const users = await User.find({
-    firstname: { $regex: firstname, $options: "i" },
-  });
-  res.status(201).json(users);
-};
-
-const deleteUser = async (req, res) => {
-  const { userId } = req.params;
-  if (!isValidObjectId(userId))
-    return res.status(401).json({ error: "Invalid request" });
-
-  const user = await User.findById(userId);
-  if (!user) return res.status(404).json({ error: "User not found!" });
-
-  await User.findByIdAndDelete(userId);
-  res.json({ message: "Course removed successfully !" });
-};
 
 module.exports = {
-  createUser,
-  loginUser,
-  deleteUser,
-  updateUser,
-  getUsers,
-  getSingleUser,
-  searchUser,
+  createAdmin,
+  loginAdmin,
+  updateAdmin
 };

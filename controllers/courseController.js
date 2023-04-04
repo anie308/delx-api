@@ -1,4 +1,5 @@
 const Course = require("../models/courseModel");
+const User = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
 
 const cloudinary = require("../cloud");
@@ -107,6 +108,117 @@ const getAllCourses = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+// const enrollCourse = async (req, res) => {
+//   const { id: courseId } = req.params;
+//   const { id: userId } = req.params;
+//   const course = await Course.findOne({ courseId });
+//   const student = await User.findOne({ userId });
+
+//   if (!course || !student) {
+//     return res.status(404).json({ message: "Course or user not found." });
+//   }
+
+//   if (student.lessons?.includes(courseId)) {
+//     return res
+//       .status(400)
+//       .json({ message: "User already enrolled in course." });
+//   }
+//    const {title} = course
+//   const courseEnrolled = { title, courseId};
+
+  
+
+//    await User.findOneAndUpdate(
+//     { _id: courseId },
+//     { $push: { lessons: courseEnrolled } },
+//     { new: true }
+//   );
+
+//   res.status(201).json(student);
+//   //
+
+  // if (course.isPaid) {
+  //   const { price, title } = course;
+  //   const { email, username } = student;
+  //   try {
+  //     const response = await axios.post("http://localhost:5000/api/payment", {
+  //       headers: {
+  //         Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
+  //       },
+  //       json: {
+  //         tx_ref: "hooli-tx-1920bbtytty",
+  //         amount: price,
+  //         currency: "NGN",
+  //         redirect_url:
+  //           "https://webhook.site/9d0b00ba-9a69-44fa-a43d-a82c33c36fdc",
+  //         meta: {
+  //           consumer_id: 23,
+  //           consumer_mac: "92a3-912ba-1192a",
+  //         },
+  //         customer: {
+  //           email: email,
+  //           phonenumber: "080****4528",
+  //           name: username,
+  //         },
+  //         customizations: {
+  //           title: `Payment for ${title} course`,
+  //           logo: "http://www.piedpiper.com/app/themes/joystick-v27/images/logo.png",
+  //         },
+  //       },
+  //     });
+
+  //     res.status(200).json(response.data);
+  //     // student.lessons.push({ courseId, course_name: course.title });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // } else {
+  //   const enrollCourse = await User.findByIdAndUpdate(
+  //     { _id: id },
+  //   { $push: { lessons: {id, course_name: course.title} } },
+  //   { new: true }
+  //   );
+  //   res.status(201).json(enrollCourse);
+  // }
+//};
+
+const enrollCourse = async (req, res) => {
+  try{
+    const { courseId, userId } = req.params;
+    const course = await Course.findOne({ _id: courseId });
+    const student = await User.findOne({ _id: userId });
+  
+    if (!course || !student) {
+      return res.status(404).json({ message: "Course or user not found." });
+    }
+  
+    const courseIsEnrolled = student.lessons.some((item)=> item.courseId === courseId)
+    if (courseIsEnrolled) {
+      return res
+        .status(400)
+        .json({ message: "User already enrolled in course." });
+    }
+  
+    const courseEnrolled = { title: course.title, courseId };
+  
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { lessons: courseEnrolled } },
+      { new: true }
+    );
+    await Course.findOneAndUpdate(
+      { _id: courseId },
+      { $inc: { enrollment: 1 } },
+      { new: true }
+    )
+  
+    res.status(201).json(student);
+  }catch(err){
+    console.log(err)
+  }
+}
+
 
 const deleteCourse = async (req, res) => {
   const { courseId } = req.params;
@@ -218,4 +330,5 @@ module.exports = {
   addLesson,
   updateLesson,
   getLessons,
+  enrollCourse,
 };

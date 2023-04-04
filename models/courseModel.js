@@ -43,6 +43,10 @@ const courseSchema = new mongoose.Schema(
       enum: ["draft", "published"],
       default: 'draft'
     },
+    enrollment: {
+      type: Number,
+      default: 0,
+    },
     lessons: [
       {
         lesson_number: {

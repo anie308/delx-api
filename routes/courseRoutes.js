@@ -9,6 +9,7 @@ const {
   addLesson,
   updateLesson,
   getLessons,
+  enrollCourse,
 } = require("../controllers/courseController");
 const multer = require("../middlewares/multer");
 const {
@@ -34,6 +35,7 @@ router.post(
   verifyTokenAndAuthorization,
   updateCourse
 );
+router.post("/enroll/:userId/:courseId", verifyToken, enrollCourse);
 router.delete("/:courseId", verifyTokenAndAuthorization, deleteCourse);
 
 //lessons area
