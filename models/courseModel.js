@@ -4,12 +4,12 @@ const courseSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
         },
     slug: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
       unique: true,
     },
@@ -24,7 +24,7 @@ const courseSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     instructor: {
@@ -33,7 +33,7 @@ const courseSchema = new mongoose.Schema(
     isPaid: {
       type: Boolean,
       default: false,
-      required: true,
+      // required: true,
     },
     price: {
       type: Number,
@@ -47,25 +47,22 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    lessons: [
-      {
-        lesson_number: {
-          type: Number,
-        },
-        lesson_title: {
-          type: String,
-          required: true,
-        },
-        lesson_body: {
-          type: String,
-          required: true,
-        },
+    // lessons: [
+    //   {
+    //     lesson_title: {
+    //       type: String,
+    //       // required: true,
+    //     },
+    //     lesson_body: {
+    //       type: String,
+    //       // required: true,
+    //     },
 
-      },
-    ],
+    //   },
+    // ],
     category: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

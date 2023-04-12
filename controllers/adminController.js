@@ -47,7 +47,12 @@ const createAdmin = async (req, res) => {
         console.log("email sent");
         newAuth.save();
         if (role === "user") newStudent.save();
-        res.status(201).json(newAuth);
+        res.status(201).json({
+          status: "success",
+          statusCode: 201,
+          message: "Admin created successfully",
+          data: newAuth,
+        });
       })
       .catch((err) => {
         res.status(500).json(err);
@@ -80,7 +85,12 @@ const loginAdmin = async (req, res) => {
     );
     const { password, ...others } = isExistingUser._doc;
 
-    res.status(200).json({ ...others, accessToken });
+    res.status(200).json({
+      status: "success",
+      statusCode: 200,
+      message: "Admin logged in successfully",
+      data: { ...others, accessToken },
+     });
   }
 };
 

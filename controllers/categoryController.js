@@ -25,7 +25,7 @@ const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name, slug } = req.body;
   try {
-    const updatedUser = await Category.findByIdAndUpdate(
+    const updatedCategory = await Category.findByIdAndUpdate(
       id,
       {
         $set: {
@@ -35,7 +35,7 @@ const updateCategory = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedUser);
+    res.status(200).json(updatedCategory);
   } catch (err) {
     res.status(500).json(err);
   }

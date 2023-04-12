@@ -123,7 +123,11 @@ const getSingleUser = async (req, res) => {
 const getUsers = async (req, res) => {
  try{
   const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 });
-  res.status(200).json(users);
+  const userCount = await User.countDocuments({ role: { $ne: 'admin' } });
+  res.status(200).json({
+    users,
+    userCount
+  });
  }catch(err){
   res.status(500).json(err)
  }
