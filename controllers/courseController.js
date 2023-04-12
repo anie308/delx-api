@@ -85,30 +85,6 @@ const updateCourse = async (req, res) => {
 //
 // })
 
-const getSingleCourse = async (req,res)=> {
-  const {slug} = req.params
-  try{
-    const singleCourse = await Course.findOne({ slug });
-    console.log(singleCourse)
-    // res.status(200).json({
-    //   singleCourse: singleCourse.map((course) => ({
-    //     id: course._id,
-    //     title: course.title,
-    //     description: course.description,
-    //     slug: course.slug,
-    //     thumbnail: course.thumbnail?.url,
-    //     category: course.category,
-    //     status: course.status,
-    //     lessons: course.lessons,
-    //     isPaid: course.isPaid,
-    //     instructor: course.instructor,
-    //   }))
-    // })
-  }catch(err){
-
-  }
-}
-
 const getPublishedCourses = async (req, res) => {
   try {
     const courses = await Course.find({ status: { $eq: "published" } }).sort({
@@ -123,7 +99,7 @@ const getPublishedCourses = async (req, res) => {
         thumbnail: course.thumbnail?.url,
         category: course.category,
         status: course.status,
-        // lessons: course.lessons,
+        lessons: course.lessons,
         isPaid: course.isPaid,
         instructor: course.instructor,
       })),
@@ -162,6 +138,15 @@ const getAllCourses = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+const getCourse = async (req, res) => {
+  const {slug} = req.params;
+  if (!slug) return res.status(401).json({ error: "Invalid request" });
+
+  const course = await Course.findOne({ slug });
+  if (!course) return res.status(404).json({ error: "Course not found!" });
+  res.json(course)
+}
 
 // const enrollCourse = async (req, res) => {
 //   const { id: courseId } = req.params;
@@ -384,5 +369,5 @@ module.exports = {
   updateLesson,
   getLessons,
   enrollCourse,
-  getSingleCourse
+  getCourse
 };

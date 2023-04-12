@@ -10,7 +10,7 @@ const {
   updateLesson,
   getLessons,
   enrollCourse,
-  getSingleCourse,
+  getCourse,
 } = require("../controllers/courseController");
 const multer = require("../middlewares/multer");
 const {
@@ -27,9 +27,9 @@ router.post(
   // multer.single("lesson_video"),
   createCourse
 );
+router.get("/single/:slug", getCourse);
 router.get("/all", verifyTokenAndAuthorization, getAllCourses);
 router.get("/drafts", verifyTokenAndAuthorization, getDraftCourses);
-router.get("/:courseId", getSingleCourse);
 router.get("/published", getPublishedCourses);
 router.post(
   "/update",
