@@ -89,20 +89,21 @@ const getSingleCourse = async (req,res)=> {
   const {slug} = req.params
   try{
     const singleCourse = await Course.findOne({ slug });
-    res.status(200).json({
-      singleCourse: singleCourse.map((course) => ({
-        id: course._id,
-        title: course.title,
-        description: course.description,
-        slug: course.slug,
-        thumbnail: course.thumbnail?.url,
-        category: course.category,
-        status: course.status,
-        lessons: course.lessons,
-        isPaid: course.isPaid,
-        instructor: course.instructor,
-      }))
-    })
+    console.log(singleCourse)
+    // res.status(200).json({
+    //   singleCourse: singleCourse.map((course) => ({
+    //     id: course._id,
+    //     title: course.title,
+    //     description: course.description,
+    //     slug: course.slug,
+    //     thumbnail: course.thumbnail?.url,
+    //     category: course.category,
+    //     status: course.status,
+    //     lessons: course.lessons,
+    //     isPaid: course.isPaid,
+    //     instructor: course.instructor,
+    //   }))
+    // })
   }catch(err){
 
   }
@@ -122,7 +123,7 @@ const getPublishedCourses = async (req, res) => {
         thumbnail: course.thumbnail?.url,
         category: course.category,
         status: course.status,
-        lessons: course.lessons,
+        // lessons: course.lessons,
         isPaid: course.isPaid,
         instructor: course.instructor,
       })),
