@@ -101,6 +101,7 @@ const getPublishedCourses = async (req, res) => {
         status: course.status,
         lessons: course.lessons,
         isPaid: course.isPaid,
+        price: course.price,
         instructor: course.instructor,
       })),
     });
