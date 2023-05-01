@@ -21,10 +21,8 @@ const createUser = async (req, res) => {
     firstname,
     lastname,
     email,
-    role,
     password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
   });
-
 
   const sender = {
     email: process.env.EMAIL,
@@ -36,25 +34,24 @@ const createUser = async (req, res) => {
     },
   ];
 
-
-    tranEmailApi
-      .sendTransacEmail({
-        sender,
-        to: receiver,
-        subject: "Welcome to Delx",
-        htmlContent: `<div>Hi ${firstname} ${lastname}</div>`,
-      })
-      .then(() => {
-        console.log("email sent");
-        newUser.save();
-        if (role === "user") 
-        res.status(201).json(newUser);
-      })
-      .catch((err) => {
-        res.status(500).json(err);
+  tranEmailApi
+    .sendTransacEmail({
+      sender,
+      to: receiver,
+      subject: "Welcome to Delx",
+      htmlContent: `<div>Hi ${firstname} ${lastname}</div>`,
+    })
+    .then(() => {
+      console.log("email sent");
+      newUser.save();
+      res.status(201).json({
+        message: "User created successfully !",
+        status: "success",
       });
-  
-  
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
 };
 
 const loginUser = async (req, res) => {
@@ -77,11 +74,25 @@ const loginUser = async (req, res) => {
         role: isExistingUser.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "2d" }
+      { expiresIn: "30s" }
     );
+    //     const refreshToken = jwt.sign(
+    //       {id: isExistingUser._id},
+    //       process.env.REFRESH_SECRET,
+    //       { expiresIn: "1d" }
+
+    // )
     const { password, ...others } = isExistingUser._doc;
 
-    res.status(200).json({ ...others, accessToken });
+    res.status(200).json({
+      status: "success",
+      message: "User logged in successfully !",
+      data: { ...others, accessToken },
+    });
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   maxAge: 1000 * 60 * 60 * 24
+    // })
   }
 };
 
@@ -121,17 +132,18 @@ const getSingleUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
- try{
-  const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 });
-  const userCount = await User.countDocuments({ role: { $ne: 'admin' } });
-  res.status(200).json({
-    users,
-    userCount
-  });
- }catch(err){
-  res.status(500).json(err)
- }
-
+  try {
+    const users = await User.find({ role: { $ne: "admin" } }).sort({
+      createdAt: -1,
+    });
+    const userCount = await User.countDocuments({ role: { $ne: "admin" } });
+    res.status(200).json({
+      users,
+      userCount,
+    });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 const searchUser = async (req, res) => {
