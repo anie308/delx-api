@@ -37,7 +37,7 @@ router.post(
   verifyTokenAndAuthorization,
   updateCourse
 );
-router.post("/enroll/:userId/:courseId", verifyToken, enrollCourse);
+router.post("/enroll", verifyToken, enrollCourse);
 router.delete("/:courseId", verifyTokenAndAuthorization, deleteCourse);
 
 //lessons area
