@@ -23,7 +23,7 @@ router.patch("/:userId", verifyToken, updateUser);
 router.get("/all", verifyTokenAndAuthorization, getUsers);
 router.get('/search', verifyTokenAndAuthorization, searchUser);
 router.get("/userId", verifyTokenAndAuthorization, getSingleUser);
-router.post("/my-courses", verifyToken, getUserEnrolledCourses)
+router.get("/my-courses/:studentId", verifyToken, getUserEnrolledCourses)
 
 
 module.exports = router;

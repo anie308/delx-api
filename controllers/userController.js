@@ -172,14 +172,18 @@ const deleteUser = async (req, res) => {
 
 const getUserEnrolledCourses = async (req, res) => {
   try{
-    const { studentId } = req.body;
+    const { studentId } = req.params;
     const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).send('Student not found');
     }
 
     const enrolledCourses = await Course.find({ enrolledStudents: studentId });
-    res.status(200).json(enrolledCourses);
+    res.status(200).json({
+      status: 'success',
+      message: 'Enrolled courses fetched successfully',
+      data: enrolledCourses
+    });
 
   }catch(err){
     res.status(500).json('Server error');
