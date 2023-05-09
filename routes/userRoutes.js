@@ -6,6 +6,7 @@ const {
   getUsers,
   getSingleUser,
   searchUser,
+  getUserEnrolledCourses
 } = require("../controllers/userController");
 const { authValidator, loginValidator } = require("../middlewares/validtors");
 const {
@@ -22,6 +23,7 @@ router.patch("/:userId", verifyToken, updateUser);
 router.get("/all", verifyTokenAndAuthorization, getUsers);
 router.get('/search', verifyTokenAndAuthorization, searchUser);
 router.get("/userId", verifyTokenAndAuthorization, getSingleUser);
+router.post("/my-courses", verifyToken, getUserEnrolledCourses)
 
 
 module.exports = router;

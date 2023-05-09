@@ -1,5 +1,5 @@
 const Course = require("../models/courseModel");
-const User = require("../models/userModel");
+const  Student = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
 
 const cloudinary = require("../cloud");
@@ -145,23 +145,23 @@ const getCourse = async (req, res) => {
 
 // const enrollCourse = async (req, res) => {
 //   const { id: courseId } = req.params;
-//   const { id: userId } = req.params;
+//   const { id: StudentId } = req.params;
 //   const course = await Course.findOne({ courseId });
-//   const student = await User.findOne({ userId });
+//   const student = await Student.findOne({ StudentId });
 
 //   if (!course || !student) {
-//     return res.status(404).json({ message: "Course or user not found." });
+//     return res.status(404).json({ message: "Course or Student not found." });
 //   }
 
 //   if (student.lessons?.includes(courseId)) {
 //     return res
 //       .status(400)
-//       .json({ message: "User already enrolled in course." });
+//       .json({ message: "Student already enrolled in course." });
 //   }
 //    const {title} = course
 //   const courseEnrolled = { title, courseId};
 
-//    await User.findOneAndUpdate(
+//    await Student.findOneAndUpdate(
 //     { _id: courseId },
 //     { $push: { lessons: courseEnrolled } },
 //     { new: true }
@@ -172,7 +172,7 @@ const getCourse = async (req, res) => {
 
 // if (course.isPaid) {
 //   const { price, title } = course;
-//   const { email, username } = student;
+//   const { email, Studentname } = student;
 //   try {
 //     const response = await axios.post("http://localhost:5000/api/payment", {
 //       headers: {
@@ -191,7 +191,7 @@ const getCourse = async (req, res) => {
 //         customer: {
 //           email: email,
 //           phonenumber: "080****4528",
-//           name: username,
+//           name: Studentname,
 //         },
 //         customizations: {
 //           title: `Payment for ${title} course`,
@@ -206,7 +206,7 @@ const getCourse = async (req, res) => {
 //     console.log(err);
 //   }
 // } else {
-//   const enrollCourse = await User.findByIdAndUpdate(
+//   const enrollCourse = await Student.findByIdAndUpdate(
 //     { _id: id },
 //   { $push: { lessons: {id, course_name: course.title} } },
 //   { new: true }
@@ -221,39 +221,40 @@ const enrollCourse = async (req, res) => {
 
     // Find the course and student by their IDs
     const course = await Course.findById(courseId);
-    const student = await User.findById(userId);
+    const student = await Student.findById(userId);
 
     // If either the course or the student cannot be found, return a 404 error
-    if (!course || !student) {
-      return res.status(404).json({ message: "Course or user not found." });
+    if (!course) {
+      return res.status(404).json({ message: "Course not found." });
+    }
+    if (!student) {
+      return res.status(404).json({ message: "Student not found." });
     }
 
     // Check if the student is already enrolled in the course
-    const courseIsEnrolled = student.lessons.some(
-      (lesson) => lesson.courseId.toString() === courseId
-    );
-    if (courseIsEnrolled) {
-      return res
-        .status(400)
-        .json({ message: "User already enrolled in course." });
+
+    const isEnrolled = await Course.findOne({
+      _id: courseId,
+      enrolledStudents: student,
+    });
+    if (isEnrolled) {
+      return res.status(404).json("Student is  Enrolled in this course");
     }
 
     // Create an object to represent the enrolled course
-    const enrolledCourse = {
-      title: course.title,
-      courseId: course._id,
-    };
 
-    // Add the enrolled course to the student's lessons array
-    await student.updateOne({ $push: { lessons: enrolledCourse } });
+    // Add the enrolled student to the course array
+    course.enrolledStudents.push(student);
+    // await student.updateOne({ $push: { lessons: enrolledCourse } });
 
     // Increment the enrollment count for the course
-    await course.updateOne({ $inc: { enrollment: 1 } });
+    course.updateOne({ $inc: { enrollment: 1 } });
+    await course.save();
 
     // Return the updated student object
     return res.status(201).json({
-      message: 'Course Enrolled Successfully',
-      status: "success"
+      message: "Course Enrolled Successfully",
+      status: "success",
     });
   } catch (err) {
     console.error(err);
@@ -388,6 +389,22 @@ const getLessons = async (req, res) => {
   }
 };
 
+const getUserEnrolledCourses = async (req, res) => {
+  try{
+    const { studentId } = req.body;
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).send('Student not found');
+    }
+
+    const enrolledCourses = await Course.find({ enrolledStudents: studentId });
+    res.status(200).json(enrolledCourses);
+
+  }catch(err){
+    res.status(500).json('Server error');
+  }
+}
+
 module.exports = {
   createCourse,
   updateCourse,
@@ -401,4 +418,5 @@ module.exports = {
   getLessons,
   enrollCourse,
   getCourse,
+  
 };

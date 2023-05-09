@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const lessonSchema = new mongoose.Schema({
+  title: { type: String,  },
+  content: { type: String,  },
+  // videoUrl: { type: String, required: true },
+  duration: { type: Number,  },
+  // quiz: { type: String }
+});
+
 const courseSchema = new mongoose.Schema(
   {
     title: {
@@ -47,22 +55,19 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // lessons: [
-    //   {
-    //     lesson_title: {
-    //       type: String,
-    //       // required: true,
-    //     },
-    //     lesson_body: {
-    //       type: String,
-    //       // required: true,
-    //     },
-
-    //   },
-    // ],
+    enrolledStudents: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      }
+    ],
+    lessons: [lessonSchema],
     category: {
       type: String,
       // required: true,
+    },
+    level:{
+      type: String,
     },
   },
   { timestamps: true }

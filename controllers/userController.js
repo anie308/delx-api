@@ -1,6 +1,7 @@
 const cryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+const Student = require("../models/userModel");
+const Course = require("../models/courseModel");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const client = SibApiV3Sdk.ApiClient.instance;
 const { isValidObjectId } = require("mongoose");
@@ -11,13 +12,13 @@ apiKey.apiKey = process.env.SIB_KEY;
 const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 const createUser = async (req, res) => {
-  const { firstname, lastname, email, password, role } = req.body;
-  const isAlreadyExists = await User.findOne({ email });
+  const { firstname, lastname, email, password } = req.body;
+  const isAlreadyExists = await Student.findOne({ email });
 
   if (isAlreadyExists)
-    return res.status(400).json({ error: "User already Exists" });
+    return res.status(400).json({ error: "Student already Exists" });
 
-  const newUser = new User({
+  const newUser = new Student({
     firstname,
     lastname,
     email,
@@ -45,7 +46,7 @@ const createUser = async (req, res) => {
       console.log("email sent");
       newUser.save();
       res.status(201).json({
-        message: "User created successfully !",
+        message: "Registration successful",
         status: "success",
       });
     })
@@ -57,7 +58,7 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const isExistingUser = await User.findOne({ email });
+  const isExistingUser = await Student.findOne({ email });
   !isExistingUser && res.status(401).json("Wrong Credentials !");
   const hashedGuy = cryptoJs.AES.decrypt(
     isExistingUser.password,
@@ -86,7 +87,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      message: "User logged in successfully !",
+      message: "Logged in successfully !",
       data: { ...others, accessToken },
     });
     // res.cookie("refreshToken", refreshToken, {
@@ -100,7 +101,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
   const { firstname, lastname, email, password, role } = req.body;
   try {
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await Student.findByIdAndUpdate(
       id,
       {
         $set: {
@@ -124,19 +125,19 @@ const getSingleUser = async (req, res) => {
   if (!id) {
     return res.status(401).json({ error: "Invalid request" });
   }
-  const user = await User.findOne({ id });
+  const user = await Student.findOne({ id });
 
-  if (!user) return res.status(404).json({ error: "User not found!" });
+  if (!user) return res.status(404).json({ error: "Student not found!" });
 
   res.status(200).json(user);
 };
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({ role: { $ne: "admin" } }).sort({
+    const users = await Student.find({}).sort({
       createdAt: -1,
     });
-    const userCount = await User.countDocuments({ role: { $ne: "admin" } });
+    const userCount = await Student.countDocuments();
     res.status(200).json({
       users,
       userCount,
@@ -151,7 +152,7 @@ const searchUser = async (req, res) => {
   if (!firstname.trim())
     return res.status(401).json({ error: "Invalid request" });
 
-  const users = await User.find({
+  const users = await Student.find({
     firstname: { $regex: firstname, $options: "i" },
   });
   res.status(201).json(users);
@@ -162,12 +163,28 @@ const deleteUser = async (req, res) => {
   if (!isValidObjectId(userId))
     return res.status(401).json({ error: "Invalid request" });
 
-  const user = await User.findById(userId);
-  if (!user) return res.status(404).json({ error: "User not found!" });
+  const user = await Student.findById(userId);
+  if (!user) return res.status(404).json({ error: "Student not found!" });
 
   await User.findByIdAndDelete(userId);
-  res.json({ message: "Course removed successfully !" });
+  res.json({ message: "Student removed successfully !" });
 };
+
+const getUserEnrolledCourses = async (req, res) => {
+  try{
+    const { studentId } = req.body;
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).send('Student not found');
+    }
+
+    const enrolledCourses = await Course.find({ enrolledStudents: studentId });
+    res.status(200).json(enrolledCourses);
+
+  }catch(err){
+    res.status(500).json('Server error');
+  }
+}
 
 module.exports = {
   createUser,
@@ -177,4 +194,5 @@ module.exports = {
   getUsers,
   getSingleUser,
   searchUser,
+  getUserEnrolledCourses
 };

@@ -24,41 +24,12 @@ const createAdmin = async (req, res) => {
     password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
   });
 
-
-  const sender = {
-    email: process.env.EMAIL,
-  };
-
-  const receiver = [
-    {
-      email: email,
-    },
-  ];
-
-
-    tranEmailApi
-      .sendTransacEmail({
-        sender,
-        to: receiver,
-        subject: "Welcome to Delx",
-        htmlContent: `<div>Hi ${firstname} ${lastname}</div>`,
-      })
-      .then(() => {
-        console.log("email sent");
-        newAuth.save();
-        if (role === "user") newStudent.save();
-        res.status(201).json({
-          status: "success",
-          statusCode: 201,
-          message: "Admin created successfully",
-          data: newAuth,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json(err);
-      });
-  
-  
+  res.status(201).json({
+    status: "success",
+    statusCode: 201,
+    message: "Admin created successfully",
+    data: newAuth,
+  });
 };
 
 const loginAdmin = async (req, res) => {
@@ -90,7 +61,7 @@ const loginAdmin = async (req, res) => {
       statusCode: 200,
       message: "Admin logged in successfully",
       data: { ...others, accessToken },
-     });
+    });
   }
 };
 
@@ -117,15 +88,8 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
 module.exports = {
   createAdmin,
   loginAdmin,
-  updateAdmin
+  updateAdmin,
 };
