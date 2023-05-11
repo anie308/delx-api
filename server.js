@@ -9,7 +9,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const cors = require('cors');
 const app = express();
-app.use(cors());
+app.use(cors({origin: '*'}));
 const apiSeedUrl = '/api/v1';
 
 
