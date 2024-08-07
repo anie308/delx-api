@@ -99,7 +99,7 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { firstname, lastname, email, password, role } = req.body;
+  const { firstname, lastname,  password } = req.body;
   try {
     const updatedUser = await Student.findByIdAndUpdate(
       id,
@@ -107,9 +107,7 @@ const updateUser = async (req, res) => {
         $set: {
           firstname,
           lastname,
-          email,
           password: cryptoJs.AES.encrypt(password, process.env.PASS_SEC),
-          role,
         },
       },
       { new: true }

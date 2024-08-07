@@ -1,5 +1,5 @@
 const Course = require("../models/courseModel");
-const  Student = require("../models/userModel");
+const Student = require("../models/userModel");
 const { isValidObjectId } = require("mongoose");
 
 const cloudinary = require("../cloud");
@@ -390,20 +390,19 @@ const getLessons = async (req, res) => {
 };
 
 const getUserEnrolledCourses = async (req, res) => {
-  try{
+  try {
     const { studentId } = req.body;
     const student = await Student.findById(studentId);
     if (!student) {
-      return res.status(404).send('Student not found');
+      return res.status(404).send("Student not found");
     }
 
     const enrolledCourses = await Course.find({ enrolledStudents: studentId });
     res.status(200).json(enrolledCourses);
-
-  }catch(err){
-    res.status(500).json('Server error');
+  } catch (err) {
+    res.status(500).json("Server error");
   }
-}
+};
 
 module.exports = {
   createCourse,
@@ -418,5 +417,4 @@ module.exports = {
   getLessons,
   enrollCourse,
   getCourse,
-  
 };
